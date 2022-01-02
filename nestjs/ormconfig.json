@@ -1,0 +1,10 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5432,
+  "username": "postgres",
+  "password": "postgres",
+  "database": "petdiary",
+  "entities": ["dist/**/*.entity{.d.ts,.js}", "**/*.entity{.d.ts,.js}"],
+  "synchronize": true
+}
