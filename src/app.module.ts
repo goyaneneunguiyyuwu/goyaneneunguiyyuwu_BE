@@ -6,8 +6,8 @@ import { Family } from './users/entities/family.entity';
 import { User } from './users/entities/user.entity';
 import { Pet } from './pets/entities/pet.entity';
 import { AuthModule } from './auth/auth.module';
+import { AppController } from './app.controller';
 
-//1
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -24,5 +24,6 @@ import { AuthModule } from './auth/auth.module';
     PetsModule,
     AuthModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
