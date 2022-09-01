@@ -1,13 +1,7 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  NotAcceptableException,
-} from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Redis } from 'ioredis';
 import { Repository } from 'typeorm';
-import { AuthDto } from './dto/auth.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Family } from './entities/family.entity';
 import { User } from './entities/user.entity';
@@ -28,14 +22,17 @@ export class UsersService {
    * @param userDto
    */
   public async signUp(userDto: CreateUserDto): Promise<void> {
-    const { email, name, password, provider } = userDto;
+    const provider = 'local';
 
-    const checkUserDuplicated = await this.checkUserDuplicated(email, provider);
+    const checkUserDuplicated = await this.checkUserDuplicated(
+      userDto.email,
+      provider,
+    );
     if (!checkUserDuplicated) {
       throw new ConflictException('이미 가입된 유저');
     }
 
-    await this.createUserWithFamily(userDto);
+    await this.createUserWithFamily(userDto, provider);
   }
   /**
    *
@@ -66,8 +63,11 @@ export class UsersService {
   /**
    * @param userDto
    */
-  private async createUserWithFamily(userDto: CreateUserDto): Promise<void> {
-    const newUser = this.userRepository.create(userDto);
+  private async createUserWithFamily(
+    userDto: CreateUserDto,
+    provider: 'local' | 'kakao',
+  ): Promise<void> {
+    const newUser = this.userRepository.create({ ...userDto, provider });
     const userRecord = await this.userRepository.save(newUser);
 
     const newFamily = this.familyRepository.create();
