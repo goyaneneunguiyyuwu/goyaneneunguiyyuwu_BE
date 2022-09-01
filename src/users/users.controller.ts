@@ -1,13 +1,19 @@
-import { Controller, Get, Post, Body, Patch, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  HttpCode,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
-import {
-  ChangeUserInfoReqBody,
-  ChangeUserInfoResponse,
-  LocalLoginReqBody,
-  LocalLoginResponse,
-} from 'src/types';
+import { ChangeUserInfoReqBody, ChangeUserInfoResponse } from 'src/types';
+import { LocalAuthGuard } from 'src/auth/local.auth.guard';
+import { AuthenticatedGuard } from 'src/auth/authentiacted.guard';
 
 @ApiTags('users')
 @Controller('api/users')
@@ -24,13 +30,12 @@ export class UsersController {
     status: 403,
     description: '유저 회원가입 실패',
   })
-  public async createUserController(
-    @Body() userDto: CreateUserDto,
-  ): Promise<void> {
+  public async signUpController(@Body() userDto: CreateUserDto): Promise<void> {
     return this.usersService.signUp(userDto);
   }
 
-  @Post('auth')
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
   @ApiResponse({
     status: 201,
     description: '로그인 성공',
@@ -39,10 +44,14 @@ export class UsersController {
     status: 403,
     description: '로그인 실패',
   })
-  public async localLoginController(
-    @Body() reqBody: LocalLoginReqBody,
-  ): Promise<LocalLoginResponse> {
-    return { statusCode: 201 };
+  public async localLoginController(@Request() req): Promise<string> {
+    return req.user;
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('protected')
+  public async protected(@Request() req): Promise<string> {
+    return req.user;
   }
 
   @Get('kakao')
