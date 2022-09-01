@@ -71,3 +71,9 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## Description
+- nestjs
+- typeorm
+
+-> 다른 프레임워크나, 레포지토리를 주입할 수 있는 어뎁터블한 구조로 작성할 예정

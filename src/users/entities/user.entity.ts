@@ -1,13 +1,19 @@
 import { IsEmail, IsString } from 'class-validator';
-import { Pet } from 'src/pets/entities/pet.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Family } from 'src/users/entities/family.entity';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import * as bcrypt from 'bcrypt';
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar')
+  @Column({ type: 'varchar', length: 40 })
   @IsEmail()
   email!: string;
 
@@ -19,6 +25,15 @@ export class User {
   @IsString()
   password!: string;
 
-  @OneToMany(() => Pet, pet => pet.user)
-  pets: Pet[];
+  @Column('varchar')
+  @IsString()
+  provider!: 'local' | 'kakao';
+
+  @ManyToOne(() => Family, family => family.users)
+  family?: Family;
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 }

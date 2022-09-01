@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PetsService } from './pets.service';
 import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
@@ -20,7 +28,6 @@ export class PetsController {
   })
   public async createPetController() {}
 
-
   @Get('info')
   @ApiResponse({
     status: 201,
@@ -32,7 +39,6 @@ export class PetsController {
   })
   public async getPetInfoController() {}
 
-
   @Patch('info/change')
   @ApiResponse({
     status: 201,
@@ -43,5 +49,4 @@ export class PetsController {
     description: 'Pet 정보 수정 실패',
   })
   public async changePetInfoController() {}
-
 }

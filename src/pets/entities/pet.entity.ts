@@ -1,6 +1,6 @@
-import { User } from 'src/users/entities/user.entity';
+import { Family } from 'src/users/entities/family.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Sex } from '../../../types';
+import { Sex } from '../../types';
 
 @Entity('pets')
 export class Pet {
@@ -22,9 +22,6 @@ export class Pet {
   @Column()
   sex: Sex;
 
-  // @OneToMany()
-  // feed_sort
-
-  @ManyToOne(() => User, user => user.pets)
-  user: User;
+  @ManyToOne(() => Family, family => family.pets)
+  family: Family;
 }
