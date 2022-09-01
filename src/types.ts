@@ -1,14 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, IsNumber } from 'class-validator';
-import { isNumberObject } from 'util/types';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-// users
-export class LocalLoginResponse {
-  @IsNumber()
-  statusCode: number;
+export class loginDto {
+  @IsNotEmpty()
+  @ApiProperty({ type: 'string' })
+  @IsEmail()
+  email: string;
+  @IsNotEmpty()
+  @ApiProperty({ type: 'string' })
+  @IsString()
+  password: string;
 }
-
-export class ChangeUserInfoReqBody {}
 
 export class ChangeUserInfoResponse {}
 

@@ -16,9 +16,4 @@ export class CreateUserDto {
   @ApiProperty({ type: 'string' })
   @IsString()
   password!: string;
-
-  @IsNotEmpty()
-  @ApiProperty({ type: 'string' })
-  @IsString()
-  provider!: 'local' | 'kakao';
 }
