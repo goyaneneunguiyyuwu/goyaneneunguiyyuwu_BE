@@ -2,7 +2,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
-  NotFoundException,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Redis } from 'ioredis';
@@ -28,29 +28,23 @@ export class UsersService {
    * @param userDto
    */
   public async signUp(userDto: CreateUserDto): Promise<void> {
-    try {
-      const { email, name, password, provider } = userDto;
+    const { email, name, password, provider } = userDto;
 
-      const checkUserDuplicated = await this.checkUserDuplicated(
-        email,
-        provider,
-      );
-      if (!checkUserDuplicated) {
-        throw new ConflictException('이미 가입된 유저');
-      }
-
-      await this.createUserWithFamily(userDto);
-    } catch (err) {
-      console.log(err);
-      throw new Error('알수없는 이유로 회원에 가입 실패');
+    const checkUserDuplicated = await this.checkUserDuplicated(email, provider);
+    if (!checkUserDuplicated) {
+      throw new ConflictException('이미 가입된 유저');
     }
-  }
 
-  public async signIn(authDto: AuthDto): Promise<void> {
-    const { email, password } = authDto;
-    const existedUser = await this.checkUser(email);
-    if (!existedUser) throw new NotFoundException('존재 하지 않는 유저');
-    return 
+    await this.createUserWithFamily(userDto);
+  }
+  /**
+   *
+   * @param email
+   * @returns
+   */
+  async getUser(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({ email });
+    return user;
   }
 
   /**
@@ -80,9 +74,13 @@ export class UsersService {
     newFamily.users = [userRecord];
     await this.familyRepository.save(newFamily);
   }
-
+  /**
+   *
+   * @param email
+   * @returns
+   */
   private async checkUser(email: string): Promise<boolean> {
-    const existedUser = this.userRepository.findOne({ email });
+    const existedUser = await this.userRepository.findOne({ email });
     return existedUser ? true : false;
   }
 }
