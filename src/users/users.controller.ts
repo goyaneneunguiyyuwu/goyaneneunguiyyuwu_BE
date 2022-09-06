@@ -82,16 +82,23 @@ export class UsersController {
   })
   public async socialLoginController() {}
 
+  @UseGuards(AuthenticatedGuard)
   @Get('info')
+  @ApiOperation({
+    summary: '유저 정보 API',
+    description: '유저의 정보를 가져온다',
+  })
   @ApiResponse({
     status: 201,
     description: '유저 정보 불러오기 성공',
   })
   @ApiResponse({
-    status: 403,
+    status: 400,
     description: '유저 정보 불러오기 실패',
   })
-  public async getUserInfoController() {}
+  public async getUserInfoController(@Request() req) {
+    return this.usersService.getUser(req.user.email);
+  }
 
   // 첫번째, 로그인할때 이름수정만 필수로 입력하게해야함
   @Patch('info/change')
