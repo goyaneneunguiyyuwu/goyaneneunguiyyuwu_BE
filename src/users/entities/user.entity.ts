@@ -1,43 +1,23 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, isEmail, IsString } from 'class-validator';
 import { Family } from 'src/users/entities/family.entity';
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 40 })
+  @Column('varchar')
   @IsEmail()
-  email!: string;
+  email: string;
 
   @Column('varchar')
   @IsString()
-  name!: string;
-
-  @Column('varchar')
-  @IsString()
-  password!: string;
-
-  @Column('varchar')
-  @IsString()
-  provider!: 'local' | 'kakao';
+  name: string;
 
   @Column({ type: 'varchar', nullable: true })
   @IsString()
-  profile_image?: string;
+  profileImage: string;
 
   @ManyToOne(() => Family, family => family.users)
-  family?: Family;
-
-  @BeforeInsert()
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
+  family: Family;
 }
