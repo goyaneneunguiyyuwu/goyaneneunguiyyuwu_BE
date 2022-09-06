@@ -9,7 +9,7 @@ export class AppController {
     session.number = 1234;
     session.string = 'abcd';
     session.object = { array: [1, 2, 3, 4], str: 'good' };
-    session.cookie.maxAge = 1000 * 10;
+    session.cookie.maxAge = 1000 * 1000;
     res.status(HttpStatus.OK).send({ init: session != undefined });
   }
 
