@@ -7,13 +7,13 @@ import { User } from 'src/users/entities/user.entity';
 export class AuthService {
   constructor(private readonly usersService: UsersService) {}
   async validateUser(email: string, password: string): Promise<User> {
-    const user = await this.usersService.getUserHashPasswordWithEmail(email);
-    const passwordValid = await bcrypt.compare(password, user.password);
-    if (!user) {
+    const localUser = await this.usersService.getLocalUserByEmail(email);
+    const passwordValid = await bcrypt.compare(password, localUser.password);
+    if (!localUser) {
       throw new NotAcceptableException('존재 하지 않는 유저');
     }
-    if (user && passwordValid) {
-      return await this.usersService.getUserWithEmail(email);
+    if (localUser && passwordValid) {
+      return localUser.user;
     }
     return null;
   }
