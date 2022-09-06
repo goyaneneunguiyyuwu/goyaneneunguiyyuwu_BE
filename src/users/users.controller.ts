@@ -37,8 +37,10 @@ export class UsersController {
     status: 403,
     description: '유저 회원가입 실패',
   })
-  public async signUpController(@Body() userDto: CreateUserDto): Promise<void> {
-    return this.usersService.signUp(userDto);
+  public async signUpController(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<void> {
+    return this.usersService.signUp(createUserDto);
   }
 
   @UseGuards(LocalAuthGuard)
@@ -60,17 +62,6 @@ export class UsersController {
     return req.user;
   }
 
-  @UseGuards(AuthenticatedGuard)
-  @Get('protected')
-  @ApiOperation({
-    summary: 'authorization 실험용',
-    description: '쿠키 auth 실험용',
-  })
-  @ApiCookieAuth()
-  public async protected(@Request() req): Promise<string> {
-    return req.user;
-  }
-
   @Get('kakao')
   @ApiResponse({
     status: 201,
@@ -83,6 +74,7 @@ export class UsersController {
   public async socialLoginController() {}
 
   @UseGuards(AuthenticatedGuard)
+  @ApiCookieAuth()
   @Get('info')
   @ApiOperation({
     summary: '유저 정보 API',
@@ -97,11 +89,12 @@ export class UsersController {
     description: '유저 정보 불러오기 실패',
   })
   public async getUserInfoController(@Request() req) {
-    return this.usersService.getUser(req.user.email);
+    return this.usersService.getUserWithId(req.user.id);
   }
 
-  // 첫번째, 로그인할때 이름수정만 필수로 입력하게해야함
-  @Patch('info/change')
+  @UseGuards(AuthenticatedGuard)
+  @ApiCookieAuth()
+  @Patch('info')
   @ApiResponse({
     status: 201,
     description: '유저 정보 수정 성공',
@@ -111,8 +104,9 @@ export class UsersController {
     description: '유저 정보 수정 실패',
   })
   public async changeUserInfoController(
-    @Body() reqBody,
-  ): Promise<ChangeUserInfoResponse> {
-    return { statusCode: 201 };
+    @Request() req,
+    @Body() updateUserDto,
+  ): Promise<void> {
+    return this.usersService.modifyUser(req.user.id, updateUserDto)
   }
 }

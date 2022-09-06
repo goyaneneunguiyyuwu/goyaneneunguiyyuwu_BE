@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Redis } from 'ioredis';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { Family } from './entities/family.entity';
 import { User } from './entities/user.entity';
 
@@ -21,25 +22,25 @@ export class UsersService {
    *
    * @param userDto
    */
-  public async signUp(userDto: CreateUserDto): Promise<void> {
+  public async signUp(createUserDto: CreateUserDto): Promise<void> {
     const provider = 'local';
 
     const checkUserDuplicated = await this.checkUserDuplicated(
-      userDto.email,
+      createUserDto.email,
       provider,
     );
     if (!checkUserDuplicated) {
       throw new ConflictException('이미 가입된 유저');
     }
 
-    await this.createUserWithFamily(userDto, provider);
+    await this.createUserWithFamily(createUserDto, provider);
   }
   /**
    *
    * @param email
    * @returns
    */
-  async getUser(email: string): Promise<User> {
+  async getUserWithEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email },
       select: ['id', 'email', 'name', 'provider', 'family'],
@@ -51,12 +52,38 @@ export class UsersService {
    * @param email
    * @returns
    */
-  async getUserWithHashPassword(email: string): Promise<User> {
+  async getUserWithId(id: number): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { email },
-      select: ['id', 'email', 'name', 'provider', 'family', 'password'],
+      where: { id },
+      select: ['id', 'email', 'name', 'provider', 'family'],
     });
     return user;
+  }
+  /**
+   *
+   * @param email
+   * @returns
+   */
+  async getUserHashPasswordWithEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['password'],
+    });
+    return user;
+  }
+
+  async modifyUser(id: number, updateUserDto: UpdateUserDto): Promise<void> {
+    const { name, profile_image } = updateUserDto;
+    const targetUser = await this.getUserWithId(id);
+    if (!name) {
+      targetUser.profile_image = profile_image;
+    } else if (!targetUser) {
+      targetUser.name = name;
+    } else {
+      targetUser.profile_image = profile_image;
+      targetUser.name = name;
+    }
+    await this.userRepository.save(targetUser);
   }
 
   /**
@@ -88,14 +115,5 @@ export class UsersService {
     const newFamily = this.familyRepository.create();
     newFamily.users = [userRecord];
     await this.familyRepository.save(newFamily);
-  }
-  /**
-   *
-   * @param email
-   * @returns
-   */
-  private async checkUser(email: string): Promise<boolean> {
-    const existedUser = await this.userRepository.findOne({ email });
-    return existedUser ? true : false;
   }
 }
