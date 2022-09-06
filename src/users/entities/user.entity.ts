@@ -29,6 +29,10 @@ export class User {
   @IsString()
   provider!: 'local' | 'kakao';
 
+  @Column({ type: 'varchar', nullable: true })
+  @IsString()
+  profile_image?: string;
+
   @ManyToOne(() => Family, family => family.users)
   family?: Family;
 
