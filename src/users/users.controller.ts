@@ -17,7 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ChangeUserInfoResponse, loginDto } from 'src/types';
+import { LocalLoginDto } from 'src/types';
 import { LocalAuthGuard } from 'src/auth/local.auth.guard';
 import { AuthenticatedGuard } from 'src/auth/authentiacted.guard';
 
@@ -40,7 +40,7 @@ export class UsersController {
   public async signUpController(
     @Body() createUserDto: CreateUserDto,
   ): Promise<void> {
-    return this.usersService.signUp(createUserDto);
+    return this.usersService.localSignUp(createUserDto);
   }
 
   @UseGuards(LocalAuthGuard)
@@ -57,7 +57,7 @@ export class UsersController {
     status: 403,
     description: '로그인 실패',
   })
-  @ApiBody({ type: loginDto })
+  @ApiBody({ type: LocalLoginDto })
   public async localLoginController(@Request() req): Promise<string> {
     return req.user;
   }
@@ -89,7 +89,7 @@ export class UsersController {
     description: '유저 정보 불러오기 실패',
   })
   public async getUserInfoController(@Request() req) {
-    return this.usersService.getUserWithId(req.user.id);
+    return this.usersService.getUserById(req.user.id);
   }
 
   @UseGuards(AuthenticatedGuard)
@@ -107,6 +107,6 @@ export class UsersController {
     @Request() req,
     @Body() updateUserDto,
   ): Promise<void> {
-    return this.usersService.modifyUser(req.user.id, updateUserDto)
+    return this.usersService.modifyUser(req.user.id, updateUserDto);
   }
 }

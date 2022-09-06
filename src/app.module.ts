@@ -7,6 +7,8 @@ import { User } from './users/entities/user.entity';
 import { Pet } from './pets/entities/pet.entity';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
+import { LocalUser } from './users/entities/local.user.entity';
+import { KakaoUser } from './users/entities/kakao.user.entity';
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { AppController } from './app.controller';
       username: 'postgres',
       password: 'postgres',
       database: 'petdiary',
-      entities: [Family, User, Pet],
+      entities: [Family, User, Pet, LocalUser, KakaoUser],
       synchronize: true,
     }),
     UsersModule,
