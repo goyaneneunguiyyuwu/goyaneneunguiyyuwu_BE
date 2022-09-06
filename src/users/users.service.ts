@@ -40,7 +40,22 @@ export class UsersService {
    * @returns
    */
   async getUser(email: string): Promise<User> {
-    const user = await this.userRepository.findOne({ email });
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'name', 'provider', 'family'],
+    });
+    return user;
+  }
+  /**
+   *
+   * @param email
+   * @returns
+   */
+  async getUserWithHashPassword(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'name', 'provider', 'family', 'password'],
+    });
     return user;
   }
 
