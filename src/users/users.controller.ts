@@ -62,7 +62,8 @@ export class UsersController {
     return req.user;
   }
 
-  @Get('kakao')
+  @UseGuards(LocalAuthGuard)
+  @Post('kakao')
   @ApiResponse({
     status: 201,
     description: '카카오 로그인 성공',
@@ -71,7 +72,9 @@ export class UsersController {
     status: 403,
     description: '카카오 로그인 실패',
   })
-  public async socialLoginController() {}
+  public async socialLoginController(@Request() req) {
+    return req.user;
+  }
 
   @UseGuards(AuthenticatedGuard)
   @ApiCookieAuth()

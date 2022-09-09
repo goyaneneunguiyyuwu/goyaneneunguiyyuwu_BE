@@ -16,7 +16,6 @@ export class AppController {
   @All('showSession')
   세션보기(@Req() req: Request, @Res() res: Response): void {
     const session: any = req.session;
-    console.log(session);
     res.status(HttpStatus.OK).send({ yourSession: session });
   }
 }
