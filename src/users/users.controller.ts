@@ -17,7 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
-import { LocalLoginDto } from 'src/types';
+import { KakaoLoginDto, LocalLoginDto } from 'src/types';
 import { LocalAuthGuard } from 'src/auth/local.auth.guard';
 import { AuthenticatedGuard } from 'src/auth/authentiacted.guard';
 
@@ -45,6 +45,7 @@ export class UsersController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @ApiBody({ type: LocalLoginDto })
   @ApiOperation({
     summary: '로그인 API',
     description: '로그인하고 쿠키를 전달한다.',
@@ -57,13 +58,13 @@ export class UsersController {
     status: 403,
     description: '로그인 실패',
   })
-  @ApiBody({ type: LocalLoginDto })
   public async localLoginController(@Request() req): Promise<string> {
     return req.user;
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('kakao')
+  @ApiBody({ type: KakaoLoginDto })
   @ApiResponse({
     status: 201,
     description: '카카오 로그인 성공',
