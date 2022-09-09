@@ -57,7 +57,7 @@ export class UsersService {
   }
   /**
    * 22.09.07 localUser의 fk로 userId를 전달해주기 때문에, 해당 정보를 client로 전달해주어, user정보를 pk인 userid로 indexing할 수 있어 좀 더 성능개선이 이루어졌다.
-   * 
+   *
    * @param {number} userId
    * @returns {Promise<User>}
    */
@@ -82,6 +82,14 @@ export class UsersService {
       relations: ['user'],
     });
     return localUser;
+  }
+  async getKakaoUserById(kakaoId: number): Promise<KakaoUser> {
+    const kakaoUser = await this.kakaoUserRepository.findOne({
+      where: { kakaoId },
+      select: ['email', 'kakaoId'],
+      relations: ['user'],
+    });
+    return kakaoUser;
   }
 
   /**
@@ -125,16 +133,20 @@ export class UsersService {
   private async createLocalUserWithFamily(
     createUserDto: CreateUserDto,
   ): Promise<void> {
-    const { email, name, password } = createUserDto;
-    const newUser = this.userRepository.create({ email, name });
-    const userRecord = await this.userRepository.save(newUser);
+    try {
+      const { email, name, password } = createUserDto;
+      const newUser = this.userRepository.create({ email, name });
+      const userRecord = await this.userRepository.save(newUser);
 
-    const newFamily = this.familyRepository.create();
-    newFamily.users = [userRecord];
-    await this.familyRepository.save(newFamily);
-    const newLocalUser = this.localUserRepository.create({ email, password });
-    newLocalUser.user = userRecord;
-    await this.localUserRepository.save(newLocalUser);
+      const newFamily = this.familyRepository.create();
+      newFamily.users = [userRecord];
+      await this.familyRepository.save(newFamily);
+      const newLocalUser = this.localUserRepository.create({ email, password });
+      newLocalUser.user = userRecord;
+      await this.localUserRepository.save(newLocalUser);
+    } catch (err) {
+      console.log(err);
+    }
   }
   /**
    *
@@ -147,15 +159,19 @@ export class UsersService {
     name: string,
     kakaoId: number,
   ): Promise<void> {
-    const newUser = this.userRepository.create({ email, name });
-    const userRecord = await this.userRepository.save(newUser);
+    try {
+      const newUser = this.userRepository.create({ email, name });
+      const userRecord = await this.userRepository.save(newUser);
 
-    const newFamily = this.familyRepository.create();
-    newFamily.users = [userRecord];
-    await this.familyRepository.save(newFamily);
+      const newFamily = this.familyRepository.create();
+      newFamily.users = [userRecord];
+      await this.familyRepository.save(newFamily);
 
-    const newKakaoUser = this.kakaoUserRepository.create({ kakaoId, email });
-    newKakaoUser.user = userRecord;
-    await this.localUserRepository.save(newKakaoUser);
+      const newKakaoUser = this.kakaoUserRepository.create({ kakaoId, email });
+      newKakaoUser.user = userRecord;
+      await this.kakaoUserRepository.save(newKakaoUser);
+    } catch (err) {
+      console.log(err);
+    }
   }
 }

@@ -17,5 +17,18 @@ export class AuthService {
     }
     return null;
   }
+  async validateKakaoUser(email: string, kakaoId: number): Promise<User> {
+    const kakaoUser = await this.usersService.getKakaoUserById(kakaoId);
+    // const kakaoIdValid = kakaoId === kakaoUser.kakaoId;
+    if (!kakaoUser) {
+      await this.usersService.kakaoSignUp(email, 'aaa', kakaoId);
+      const newKakaoUser = await this.usersService.getKakaoUserById(kakaoId);
+      return newKakaoUser.user;
+    }
+    if (kakaoUser) {
+      return kakaoUser.user;
+    }
+    return null;
+  }
 }
 // response는없습니다.
