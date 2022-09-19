@@ -134,8 +134,8 @@ export class UsersService {
     createUserDto: CreateUserDto,
   ): Promise<void> {
     try {
-      const { email, name, password } = createUserDto;
-      const newUser = this.userRepository.create({ email, name });
+      const { email, password } = createUserDto;
+      const newUser = this.userRepository.create({ email });
       const userRecord = await this.userRepository.save(newUser);
 
       const newFamily = this.familyRepository.create();
@@ -151,16 +151,14 @@ export class UsersService {
   /**
    *
    * @param {string} email
-   * @param {string} name
    * @param {number} kakaoId
    */
   private async createKaKaoUserWithFamily(
     email: string,
-    name: string,
     kakaoId: number,
   ): Promise<void> {
     try {
-      const newUser = this.userRepository.create({ email, name });
+      const newUser = this.userRepository.create({ email });
       const userRecord = await this.userRepository.save(newUser);
 
       const newFamily = this.familyRepository.create();

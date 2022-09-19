@@ -10,9 +10,9 @@ export class User {
   @IsEmail()
   email: string;
 
-  @Column('varchar')
+  @Column({ type: 'varchar', nullable: true })
   @IsString()
-  name: string;
+  nickName: string;
 
   @Column({ type: 'varchar', nullable: true })
   @IsString()

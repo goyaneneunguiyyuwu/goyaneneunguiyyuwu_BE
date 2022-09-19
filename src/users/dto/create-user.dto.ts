@@ -14,15 +14,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   @ApiProperty({
     type: 'string',
-    example: 'jake',
-    description: '로컬 유저의 이름',
-  })
-  @IsString()
-  name: string;
-
-  @IsNotEmpty()
-  @ApiProperty({
-    type: 'string',
     example: 'test1234',
     description: '로컬 유저의 비밀번호',
   })
