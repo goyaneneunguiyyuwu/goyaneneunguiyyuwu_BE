@@ -1,4 +1,10 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Redis } from 'ioredis';
 import { Repository } from 'typeorm';
@@ -33,7 +39,7 @@ export class UsersService {
       createUserDto.email,
     );
     if (!checkUserDuplicated) {
-      throw new ConflictException('이미 가입된 유저');
+      throw new ConflictException('이미 가입된 유저입니다.');
     }
     await this.createLocalUserWithFamily(createUserDto);
   }
@@ -41,19 +47,14 @@ export class UsersService {
   /**
    *
    * @param {string} email
-   * @param {string} name
    * @param {number} kakaoId
    */
-  public async kakaoSignUp(
-    email: string,
-    name: string,
-    kakaoId: number,
-  ): Promise<void> {
+  public async kakaoSignUp(email: string, kakaoId: number): Promise<void> {
     const checkUserDuplicated = await this.checkKakaoUserDuplicated(kakaoId);
     if (!checkUserDuplicated) {
-      throw new ConflictException('이미 가입된 유저');
+      throw new ConflictException('이미 가입된 유저입니다.');
     }
-    await this.createKaKaoUserWithFamily(email, name, kakaoId);
+    await this.createKaKaoUserWithFamily(email, kakaoId);
   }
   /**
    * 22.09.07 localUser의 fk로 userId를 전달해주기 때문에, 해당 정보를 client로 전달해주어, user정보를 pk인 userid로 indexing할 수 있어 좀 더 성능개선이 이루어졌다.
@@ -64,9 +65,11 @@ export class UsersService {
   async getUserById(userId: number): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      select: ['id', 'email', 'name', 'profileImage'],
+      select: ['id', 'email', 'nickName', 'profileImage'],
       relations: ['family'],
     });
+    if (user === undefined)
+      throw new NotFoundException('유저 정보가 존재하지 않습니다.');
     return user;
   }
   /**
@@ -101,16 +104,13 @@ export class UsersService {
     userId: number,
     updateUserDto: UpdateUserDto,
   ): Promise<void> {
-    const { name, profileImage } = updateUserDto;
+    const { nickName, profileImage } = updateUserDto;
     const targetUser = await this.getUserById(userId);
-    if (!name) {
-      targetUser.profileImage = profileImage;
-    } else if (!targetUser) {
-      targetUser.name = name;
-    } else {
-      targetUser.profileImage = profileImage;
-      targetUser.name = name;
-    }
+    if (!targetUser) throw new NotFoundException('유저가 존재 하지 않습니다.');
+    if (nickName === undefined && profileImage === undefined)
+      throw new NotAcceptableException('수정할 유저 정보가 없습니다.');
+    targetUser.profileImage = profileImage;
+    targetUser.nickName = nickName;
     await this.userRepository.save(targetUser);
   }
 
