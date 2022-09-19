@@ -1,4 +1,8 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
@@ -8,27 +12,22 @@ export class AuthService {
   constructor(private readonly usersService: UsersService) {}
   async validateUser(email: string, password: string): Promise<User> {
     const localUser = await this.usersService.getLocalUserByEmail(email);
+    if (localUser === undefined)
+      throw new NotFoundException('존재 하지 않는 유저입니다.');
     const passwordValid = await bcrypt.compare(password, localUser.password);
-    if (!localUser) {
-      throw new NotAcceptableException('존재 하지 않는 유저');
+    if (passwordValid === false) {
+      throw new UnauthorizedException('비밀번호가 올바르지 않습니다');
     }
-    if (localUser && passwordValid) {
-      return localUser.user;
-    }
-    return null;
+    return localUser.user;
   }
   async validateKakaoUser(email: string, kakaoId: number): Promise<User> {
     const kakaoUser = await this.usersService.getKakaoUserById(kakaoId);
-    // const kakaoIdValid = kakaoId === kakaoUser.kakaoId;
-    if (!kakaoUser) {
-      await this.usersService.kakaoSignUp(email, 'aaa', kakaoId);
+    if (kakaoUser === undefined) {
+      await this.usersService.kakaoSignUp(email, kakaoId);
       const newKakaoUser = await this.usersService.getKakaoUserById(kakaoId);
       return newKakaoUser.user;
     }
-    if (kakaoUser) {
-      return kakaoUser.user;
-    }
-    return null;
+    return kakaoUser.user;
   }
 }
 // response는없습니다.
