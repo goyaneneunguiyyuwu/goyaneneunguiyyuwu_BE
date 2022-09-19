@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { LocalUser } from './users/entities/local.user.entity';
 import { KakaoUser } from './users/entities/kakao.user.entity';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './all-exception.filter';
 
 @Module({
   imports: [
@@ -27,5 +29,11 @@ import { KakaoUser } from './users/entities/kakao.user.entity';
     AuthModule,
   ],
   controllers: [AppController],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule {}
