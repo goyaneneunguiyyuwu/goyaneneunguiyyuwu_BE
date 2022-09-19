@@ -111,6 +111,10 @@ export class UsersController {
   @UseGuards(AuthenticatedGuard)
   @ApiCookieAuth()
   @Patch('info')
+  @ApiOperation({
+    summary: '유저 정보 수정 API',
+    description: '유저 정보를 수정한다.',
+  })
   @ApiResponse({
     status: 201,
     description: '유저 정보 수정 성공',
