@@ -81,16 +81,12 @@ export class UsersService {
   async getLocalUserByEmail(email: string): Promise<LocalUser> {
     const localUser = await this.localUserRepository.findOne({
       where: { email },
-      select: ['email', 'password'],
-      relations: ['user'],
     });
     return localUser;
   }
   async getKakaoUserById(kakaoId: number): Promise<KakaoUser> {
     const kakaoUser = await this.kakaoUserRepository.findOne({
       where: { kakaoId },
-      select: ['email', 'kakaoId'],
-      relations: ['user'],
     });
     return kakaoUser;
   }

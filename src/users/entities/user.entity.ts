@@ -1,6 +1,12 @@
-import { IsEmail, isEmail, IsString } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 import { Family } from 'src/users/entities/family.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -18,6 +24,7 @@ export class User {
   @IsString()
   profileImage: string;
 
-  @ManyToOne(() => Family, family => family.users)
+  @ManyToOne(() => Family, family => family.users, { eager: true })
+  @JoinColumn()
   family: Family;
 }

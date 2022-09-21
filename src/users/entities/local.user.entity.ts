@@ -19,7 +19,7 @@ export class LocalUser {
   @IsString()
   password: string;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, { eager: true })
   @JoinColumn()
   user: User;
 

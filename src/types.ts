@@ -38,4 +38,13 @@ export class KakaoLoginDto {
   kakaoId: number;
 }
 // pets
-export type Sex = 'male' | 'female';
+export enum Sex {
+  male,
+  female,
+}
+
+export interface AuthPayload {
+  userId: number;
+  familyId: number;
+  email: string;
+}
