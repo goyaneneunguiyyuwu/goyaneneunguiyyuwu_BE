@@ -38,7 +38,9 @@ export class PetsService {
     });
 
     if (pet.family.id !== familyId) {
-      throw new NotAcceptableException('접근 할 수 없는 반려동물입니다.');
+      throw new NotAcceptableException(
+        '해당 유저가 접근 할 수 없는 반려동물입니다.',
+      );
     }
 
     return pet;
