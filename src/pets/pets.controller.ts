@@ -47,7 +47,7 @@ export class PetsController {
     await this.petsService.create(req.user.familyId, createPetDto);
   }
 
-  @Get('info/:petId')
+  @Get(':petId')
   @UseGuards(AuthenticatedGuard)
   @ApiCookieAuth()
   @ApiOperation({
@@ -70,7 +70,7 @@ export class PetsController {
     return this.petsService.info(req.user.familyId, petId);
   }
 
-  @Patch('info/:petId')
+  @Patch(':petId')
   @UseGuards(AuthenticatedGuard)
   @ApiCookieAuth()
   @ApiOperation({
@@ -92,5 +92,24 @@ export class PetsController {
   ): Promise<void> {
     const petId = parseInt(params.petId);
     await this.petsService.modify(req.user.familyId, petId, updatePetDto);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @ApiCookieAuth()
+  @Get('')
+  @ApiOperation({
+    summary: '반려동물 리스트 API',
+    description: '유저가 속한 가족의 반려동물 리스트를 가져온다.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: '반려동물 리스트 불러오기 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '유저 정보가 존재하지 않습니다.',
+  })
+  public async getFamilyInfoController(@Request() req) {
+    return this.petsService.getPetsByFamilyId(req.user.familyId);
   }
 }

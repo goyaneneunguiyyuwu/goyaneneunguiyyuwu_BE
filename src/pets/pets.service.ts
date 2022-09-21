@@ -89,4 +89,12 @@ export class PetsService {
   //   }
   //   return target;
   // };
+
+  async getPetsByFamilyId(familyId) {
+    const pets = await this.familyRepository.findOne({
+      where: { id: familyId },
+      relations: ['pets'],
+    });
+    return pets;
+  }
 }

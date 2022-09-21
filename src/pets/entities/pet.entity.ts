@@ -38,6 +38,6 @@ export class Pet {
   @Column()
   neutering: boolean;
 
-  @ManyToOne(() => Family, family => family.pets)
+  @ManyToOne(() => Family, family => family.pets, { eager: true })
   family: Family;
 }
