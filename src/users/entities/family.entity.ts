@@ -7,7 +7,7 @@ export class Family {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany(() => User, user => user.family)
+  @OneToMany(() => User, user => user.family, { cascade: true })
   users?: User[];
 
   @OneToMany(() => Pet, pet => pet.family, { cascade: true })

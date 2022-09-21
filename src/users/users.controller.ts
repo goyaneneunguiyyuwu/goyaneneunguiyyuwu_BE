@@ -91,7 +91,7 @@ export class UsersController {
 
   @UseGuards(AuthenticatedGuard)
   @ApiCookieAuth()
-  @Get('info')
+  @Get('')
   @ApiOperation({
     summary: '유저 정보 API',
     description: '유저의 정보를 가져온다',
@@ -105,12 +105,12 @@ export class UsersController {
     description: '유저 정보가 존재하지 않습니다.',
   })
   public async getUserInfoController(@Request() req) {
-    return this.usersService.getUserById(req.user.id);
+    return this.usersService.getUserById(req.user.userId);
   }
 
   @UseGuards(AuthenticatedGuard)
   @ApiCookieAuth()
-  @Patch('info')
+  @Patch('')
   @ApiOperation({
     summary: '유저 정보 수정 API',
     description: '유저 정보를 수정한다.',
@@ -131,6 +131,25 @@ export class UsersController {
     @Request() req,
     @Body() updateUserDto,
   ): Promise<void> {
-    return this.usersService.modifyUser(req.user.id, updateUserDto);
+    return this.usersService.modifyUser(req.user.userId, updateUserDto);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @ApiCookieAuth()
+  @Get('family')
+  @ApiOperation({
+    summary: '가족 정보 API',
+    description: '유저가 속한 가족의 정보를 가져온다',
+  })
+  @ApiResponse({
+    status: 201,
+    description: '가족 정보 불러오기 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '유저 정보가 존재하지 않습니다.',
+  })
+  public async getFamilyInfoController(@Request() req) {
+    return this.usersService.getFamilyByFamilyId(req.user.familyId);
   }
 }

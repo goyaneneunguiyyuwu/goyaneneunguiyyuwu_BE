@@ -159,4 +159,12 @@ export class UsersService {
     newKakaoUser.user = newUserRecord;
     await this.kakaoUserRepository.save(newKakaoUser);
   }
+
+  async getFamilyByFamilyId(familyId) {
+    const family = await this.familyRepository.findOne({
+      where: { id: familyId },
+      relations: ['users', 'pets'],
+    });
+    return family;
+  }
 }
