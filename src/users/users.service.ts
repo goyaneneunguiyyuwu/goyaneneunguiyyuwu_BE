@@ -129,20 +129,16 @@ export class UsersService {
   private async createLocalUserWithFamily(
     createUserDto: CreateUserDto,
   ): Promise<void> {
-    try {
-      const { email, password } = createUserDto;
-      const newUser = this.userRepository.create({ email });
-      const userRecord = await this.userRepository.save(newUser);
+    const { email, password } = createUserDto;
+    const newUser = this.userRepository.create({ email });
+    const newFamily = this.familyRepository.create();
+    const newLocalUser = this.localUserRepository.create({ email, password });
 
-      const newFamily = this.familyRepository.create();
-      newFamily.users = [userRecord];
-      await this.familyRepository.save(newFamily);
-      const newLocalUser = this.localUserRepository.create({ email, password });
-      newLocalUser.user = userRecord;
-      await this.localUserRepository.save(newLocalUser);
-    } catch (err) {
-      console.log(err);
-    }
+    const newFamilyRecord = await this.familyRepository.save(newFamily);
+    newUser.family = newFamilyRecord;
+    const newUserRecord = await this.userRepository.save(newUser);
+    newLocalUser.user = newUserRecord;
+    await this.localUserRepository.save(newLocalUser);
   }
   /**
    *
@@ -153,19 +149,14 @@ export class UsersService {
     email: string,
     kakaoId: number,
   ): Promise<void> {
-    try {
-      const newUser = this.userRepository.create({ email });
-      const userRecord = await this.userRepository.save(newUser);
+    const newUser = this.userRepository.create({ email });
+    const newFamily = this.familyRepository.create();
+    const newKakaoUser = this.kakaoUserRepository.create({ kakaoId, email });
 
-      const newFamily = this.familyRepository.create();
-      newFamily.users = [userRecord];
-      await this.familyRepository.save(newFamily);
-
-      const newKakaoUser = this.kakaoUserRepository.create({ kakaoId, email });
-      newKakaoUser.user = userRecord;
-      await this.kakaoUserRepository.save(newKakaoUser);
-    } catch (err) {
-      console.log(err);
-    }
+    const newFamilyRecord = await this.familyRepository.save(newFamily);
+    newUser.family = newFamilyRecord;
+    const newUserRecord = await this.userRepository.save(newUser);
+    newKakaoUser.user = newUserRecord;
+    await this.kakaoUserRepository.save(newKakaoUser);
   }
 }
